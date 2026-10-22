@@ -9,6 +9,47 @@
             <h1 id="turmas-titulo">Grade de turmas</h1>
             <p class="section-intro">Confira os horários, conheça os instrutores e escolha sua próxima aula.</p>
         </div>
+        <form class="schedule-filters" method="get" aria-label="Filtrar turmas">
+            <div class="filter-field">
+                <label for="filtro-modalidade">Modalidade</label>
+                <select id="filtro-modalidade" name="modalidade">
+                    <option value="">Todas as modalidades</option>
+                    {% for modalidade in modalidades %}
+                        <option
+                            value="{{ modalidade.pk }}"
+                            {% if filtros.modalidade == modalidade.pk|stringformat:"s" %}selected{% endif %}
+                        >
+                            {{ modalidade.nome }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-field">
+                <label for="filtro-dia">Dia da semana</label>
+                <select id="filtro-dia" name="dia">
+                    <option value="">Todos os dias</option>
+                    {% for valor, rotulo in dias_da_semana %}
+                        <option value="{{ valor }}" {% if filtros.dia == valor %}selected{% endif %}>
+                            {{ rotulo }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="filter-field">
+                <label for="filtro-instrutor">Instrutor</label>
+                <input
+                    id="filtro-instrutor"
+                    name="instrutor"
+                    type="search"
+                    value="{{ filtros.instrutor }}"
+                    placeholder="Buscar por nome"
+                >
+            </div>
+            <div class="filter-actions">
+                <button class="button" type="submit">Aplicar filtros</button>
+                <a class="button button-secondary" href="{% url 'AMOVE:lista_turmas' %}">Limpar filtros</a>
+            </div>
+        </form>
         <div class="table-wrapper" role="region" aria-labelledby="turmas-titulo" tabindex="0">
             <table class="schedule-table">
                 <thead>
@@ -31,7 +72,13 @@
                         </tr>
                     {% empty %}
                         <tr>
-                            <td class="empty-table" colspan="5">Nenhuma turma cadastrada no momento.</td>
+                            <td class="empty-table" colspan="5">
+                                {% if filtros_aplicados %}
+                                    Nenhuma turma encontrada com os filtros selecionados.
+                                {% else %}
+                                    Nenhuma turma cadastrada no momento.
+                                {% endif %}
+                            </td>
                         </tr>
                     {% endfor %}
                 </tbody>

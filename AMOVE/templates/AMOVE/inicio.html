@@ -39,28 +39,34 @@
         <div class="card-grid">
             {% for card in modalidades %}
                 <article class="activity-card">
-                    <div class="activity-image">
-                        {% if card.imagem %}
-                            <img
-                                src="{% static card.imagem %}"
-                                alt="{{ card.texto_alternativo }}"
-                                loading="lazy"
-                                decoding="async"
-                            >
-                        {% else %}
-                            <div
-                                class="activity-image-placeholder"
-                                role="img"
-                                aria-label="{{ card.texto_alternativo }}"
-                            >
-                                <span aria-hidden="true">AMOVE</span>
-                                <span>Imagem em preparação</span>
-                            </div>
-                        {% endif %}
-                    </div>
-                    <span class="card-number" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
-                    <h3>{{ card.modalidade.nome }}</h3>
-                    <p>{{ card.modalidade.descricao|default:"Descrição não informada." }}</p>
+                    <a
+                        class="activity-card-link"
+                        href="{% url 'AMOVE:lista_turmas' %}?modalidade={{ card.modalidade.pk }}"
+                        aria-label="Ver turmas de {{ card.modalidade.nome }}"
+                    >
+                        <div class="activity-image">
+                            {% if card.imagem %}
+                                <img
+                                    src="{% static card.imagem %}"
+                                    alt="{{ card.texto_alternativo }}"
+                                    loading="lazy"
+                                    decoding="async"
+                                >
+                            {% else %}
+                                <div
+                                    class="activity-image-placeholder"
+                                    role="img"
+                                    aria-label="{{ card.texto_alternativo }}"
+                                >
+                                    <span aria-hidden="true">AMOVE</span>
+                                    <span>Imagem em preparação</span>
+                                </div>
+                            {% endif %}
+                        </div>
+                        <span class="card-number" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
+                        <h3>{{ card.modalidade.nome }}</h3>
+                        <p>{{ card.modalidade.descricao|default:"Descrição não informada." }}</p>
+                    </a>
                 </article>
             {% empty %}
                 <p class="empty-state">Nenhuma modalidade ativa no momento.</p>

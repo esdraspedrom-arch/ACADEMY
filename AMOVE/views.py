@@ -54,6 +54,10 @@ def inicio(request):
 
 
 def lista_turmas(request):
+    modalidade_id = request.GET.get("modalidade", "").strip()
+    dia_semana = request.GET.get("dia", "").strip()
+    instrutor = request.GET.get("instrutor", "").strip()
+
     ordem_dias = Case(
         When(dia_semana="segunda", then=Value(1)),
         When(dia_semana="terca", then=Value(2)),
@@ -69,4 +73,37 @@ def lista_turmas(request):
         .annotate(_ordem_dia=ordem_dias)
         .order_by("_ordem_dia", "horario")
     )
-    return render(request, "AMOVE/turmas.html", {"turmas": turmas})
+
+    if modalidade_id:
+        try:
+            modalidade_id = int(modalidade_id)
+        except ValueError:
+            turmas = turmas.none()
+        else:
+            turmas = turmas.filter(modalidade_id=modalidade_id)
+
+    dias_validos = {valor for valor, _ in Turma.DIAS_DA_SEMANA}
+    if dia_semana:
+        if dia_semana in dias_validos:
+            turmas = turmas.filter(dia_semana=dia_semana)
+        else:
+            turmas = turmas.none()
+
+    if instrutor:
+        turmas = turmas.filter(instrutor__icontains=instrutor)
+
+    return render(
+        request,
+        "AMOVE/turmas.html",
+        {
+            "turmas": turmas,
+            "modalidades": Modalidade.objects.order_by("nome"),
+            "dias_da_semana": Turma.DIAS_DA_SEMANA,
+            "filtros": {
+                "modalidade": str(modalidade_id) if modalidade_id else "",
+                "dia": dia_semana,
+                "instrutor": instrutor,
+            },
+            "filtros_aplicados": bool(modalidade_id or dia_semana or instrutor),
+        },
+    )

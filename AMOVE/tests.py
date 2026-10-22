@@ -1,3 +1,4 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.urls import reverse
 
@@ -79,6 +80,162 @@ class PaginasPublicasTests(TestCase):
         self.assertContains(response, "Segunda")
         self.assertContains(response, "Bruna")
 
+    def test_filtro_de_modalidade_e_mantido_no_formulario(self):
+        selecionada = Modalidade.objects.create(nome="Muay Thai")
+        outra = Modalidade.objects.create(nome="Funcional")
+        turma_selecionada = Turma.objects.create(
+            modalidade=selecionada,
+            dia_semana="segunda",
+            horario="18:00",
+            instrutor="Ana",
+        )
+        Turma.objects.create(
+            modalidade=outra,
+            dia_semana="segunda",
+            horario="19:00",
+            instrutor="Bruna",
+        )
+
+        response = self.client.get(
+            reverse("AMOVE:lista_turmas"),
+            {"modalidade": selecionada.pk},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(list(response.context["turmas"]), [turma_selecionada])
+        self.assertEqual(
+            response.context["filtros"]["modalidade"],
+            str(selecionada.pk),
+        )
+
+    def test_filtros_de_dia_e_busca_parcial_por_instrutor(self):
+        modalidade = Modalidade.objects.create(nome="Funcional")
+        correspondente = Turma.objects.create(
+            modalidade=modalidade,
+            dia_semana="terca",
+            horario="18:00",
+            instrutor="Ana Paula",
+        )
+        Turma.objects.create(
+            modalidade=modalidade,
+            dia_semana="terca",
+            horario="19:00",
+            instrutor="Bruna",
+        )
+        Turma.objects.create(
+            modalidade=modalidade,
+            dia_semana="quarta",
+            horario="18:00",
+            instrutor="Ana Paula",
+        )
+
+        resposta_dia = self.client.get(
+            reverse("AMOVE:lista_turmas"),
+            {"dia": "terca"},
+        )
+        resposta_instrutor = self.client.get(
+            reverse("AMOVE:lista_turmas"),
+            {"instrutor": "paul"},
+        )
+        resposta_combinada = self.client.get(
+            reverse("AMOVE:lista_turmas"),
+            {
+                "modalidade": modalidade.pk,
+                "dia": "terca",
+                "instrutor": "paul",
+            },
+        )
+
+        self.assertEqual(list(resposta_dia.context["turmas"]), [
+            turma
+            for turma in Turma.objects.filter(dia_semana="terca").order_by("horario")
+        ])
+        self.assertEqual(
+            list(resposta_instrutor.context["turmas"]),
+            [correspondente, Turma.objects.get(dia_semana="quarta")],
+        )
+        self.assertEqual(list(resposta_combinada.context["turmas"]), [correspondente])
+        self.assertContains(resposta_combinada, 'value="terca" selected')
+        self.assertContains(resposta_combinada, 'value="paul"')
+
+    def test_filtro_sem_resultados_mostra_mensagem_amigavel(self):
+        modalidade = Modalidade.objects.create(nome="Sem turmas")
+
+        response = self.client.get(
+            reverse("AMOVE:lista_turmas"),
+            {"modalidade": modalidade.pk},
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(
+            response,
+            "Nenhuma turma encontrada com os filtros selecionados.",
+        )
+
+    def test_limpar_filtros_retorna_a_rota_sem_parametros_get(self):
+        response = self.client.get(reverse("AMOVE:lista_turmas"))
+
+        self.assertContains(
+            response,
+            f'href="{reverse("AMOVE:lista_turmas")}"',
+        )
+
+    def test_card_da_modalidade_abre_grade_filtrada_por_id(self):
+        modalidade = Modalidade.objects.create(nome="Muay Thai", ativa=True)
+        outra = Modalidade.objects.create(nome="Funcional", ativa=True)
+        turma = Turma.objects.create(
+            modalidade=modalidade,
+            dia_semana="sabado",
+            horario="09:00",
+            instrutor="Carlos",
+        )
+        Turma.objects.create(
+            modalidade=outra,
+            dia_semana="segunda",
+            horario="08:00",
+            instrutor="Bruna",
+        )
+
+        inicio = self.client.get(reverse("AMOVE:inicio"))
+        grade = self.client.get(
+            reverse("AMOVE:lista_turmas"),
+            {"modalidade": modalidade.pk},
+        )
+
+        self.assertContains(
+            inicio,
+            f'href="{reverse("AMOVE:lista_turmas")}?modalidade={modalidade.pk}"',
+        )
+        self.assertContains(
+            inicio,
+            f'aria-label="Ver turmas de {modalidade.nome}"',
+        )
+        self.assertEqual(list(grade.context["turmas"]), [turma])
+        self.assertContains(grade, "Sábado")
+
+    def test_modalidade_sem_turmas_nao_mostra_turmas_de_outras(self):
+        sem_turmas = Modalidade.objects.create(nome="Pilates")
+        outra = Modalidade.objects.create(nome="Musculação")
+        Turma.objects.create(
+            modalidade=outra,
+            dia_semana="segunda",
+            horario="08:00",
+            instrutor="Bruna",
+        )
+
+        response = self.client.get(
+            reverse("AMOVE:lista_turmas"),
+            {"modalidade": sem_turmas.pk},
+        )
+
+        self.assertEqual(list(response.context["turmas"]), [])
+        self.assertNotContains(
+            response,
+            'data-label="Modalidade">Musculação',
+            html=False,
+        )
+        self.assertContains(response, "Nenhuma turma encontrada")
+
     def test_inicio_associa_imagens_estaticas_as_modalidades_conhecidas(self):
         Modalidade.objects.create(nome="Muay Thai", ativa=True)
         Modalidade.objects.create(nome="Musculação", ativa=True)
@@ -90,3 +247,31 @@ class PaginasPublicasTests(TestCase):
         self.assertContains(response, "AMOVE/images/musculacao.jpg")
         self.assertContains(response, "Atleta treinando Muay Thai")
         self.assertContains(response, "Atleta treinando com pesos")
+
+
+class AdminModalidadesTests(TestCase):
+    def test_lista_de_modalidades_pode_ser_filtrada_por_situacao(self):
+        Modalidade.objects.create(nome="Funcional ativa", ativa=True)
+        Modalidade.objects.create(nome="Pilates inativa", ativa=False)
+        usuario = get_user_model().objects.create_superuser(
+            username="admin",
+            email="admin@example.com",
+            password="senha-teste",
+        )
+        self.client.force_login(usuario)
+        url = reverse("admin:AMOVE_modalidade_changelist")
+
+        ativas = self.client.get(url, {"situacao": "ativa"})
+        inativas = self.client.get(url, {"situacao": "inativa"})
+
+        self.assertEqual(ativas.status_code, 200)
+        self.assertEqual(
+            list(ativas.context["cl"].queryset.values_list("nome", flat=True)),
+            ["Funcional ativa"],
+        )
+        self.assertEqual(
+            list(inativas.context["cl"].queryset.values_list("nome", flat=True)),
+            ["Pilates inativa"],
+        )
+        self.assertContains(ativas, "Ativa")
+        self.assertContains(ativas, "Inativa")
