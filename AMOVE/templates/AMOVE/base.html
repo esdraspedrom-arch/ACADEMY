@@ -1,0 +1,39 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#0B0B0D">
+    <title>{% block title %}Academia Corpo em Movimento{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'AMOVE/css/style.css' %}">
+</head>
+<body>
+    <a class="skip-link" href="#conteudo">Pular para o conteúdo</a>
+    <header class="site-header">
+        <div class="container header-inner">
+            <a class="brand" href="{% url 'AMOVE:inicio' %}">
+                <img
+                    class="brand-logo"
+                    src="{% static 'AMOVE/images/logo-amove.png' %}"
+                    alt="Logo AMOVE com símbolo de infinito integrado a um haltere e o nome Academia Corpo em Movimento"
+                >
+            </a>
+            <nav class="site-nav" aria-label="Navegação principal">
+                <a href="/">Início</a>
+                <a href="/turmas/">Turmas</a>
+            </nav>
+        </div>
+    </header>
+
+    <main id="conteudo" class="container page-content">
+        {% block content %}{% endblock %}
+    </main>
+
+    <footer class="site-footer">
+        <div class="container">
+            <p>&copy; Academia Corpo em Movimento</p>
+        </div>
+    </footer>
+</body>
+</html>

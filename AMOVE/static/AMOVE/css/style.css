@@ -1,0 +1,520 @@
+:root {
+    color-scheme: dark;
+    --color-background: #0B0B0D;
+    --color-surface: #171719;
+    --color-accent: #D72638;
+    --color-depth: #8F1424;
+    --color-highlight: #FFBE98;
+    --color-text: #F5F5F5;
+    --color-muted: #A6A6AA;
+    --color-border: #39393D;
+    --radius: 1rem;
+    --shadow: 0 1rem 2.5rem rgb(0 0 0 / 32%);
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    min-width: 320px;
+    min-height: 100vh;
+    margin: 0;
+    background: var(--color-background);
+    color: var(--color-text);
+    font-family: "Segoe UI", Arial, sans-serif;
+    line-height: 1.6;
+}
+
+a {
+    color: inherit;
+}
+
+a:focus-visible,
+[tabindex="0"]:focus-visible {
+    outline: 3px solid var(--color-accent);
+    outline-offset: 4px;
+}
+
+.container {
+    width: min(100% - 3rem, 72rem);
+    margin-inline: auto;
+}
+
+.skip-link {
+    position: absolute;
+    z-index: 10;
+    top: 0.75rem;
+    left: 0.75rem;
+    padding: 0.65rem 1rem;
+    transform: translateY(-160%);
+    border-radius: 0.4rem;
+    background: var(--color-text);
+    color: var(--color-background);
+    font-weight: 700;
+}
+
+.skip-link:focus {
+    transform: translateY(0);
+}
+
+.site-header {
+    background: var(--color-background);
+    color: var(--color-text);
+}
+
+.header-inner {
+    display: flex;
+    min-height: 5rem;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+}
+
+.brand {
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.brand-logo {
+    display: block;
+    width: clamp(9rem, 18vw, 12rem);
+    height: auto;
+    object-fit: contain;
+}
+
+.site-nav {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.site-nav a {
+    padding: 0.55rem 0.85rem;
+    border-radius: 0.5rem;
+    color: var(--color-text);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.site-nav a:hover {
+    background: var(--color-surface);
+}
+
+.site-nav a:focus-visible,
+.brand:focus-visible,
+.contact-link:focus-visible {
+    outline-color: var(--color-highlight);
+}
+
+.page-content {
+    min-height: calc(100vh - 9rem);
+}
+
+.hero {
+    position: relative;
+    display: grid;
+    min-height: 30rem;
+    grid-template-columns: minmax(0, 1fr);
+    align-items: center;
+    overflow: hidden;
+    margin-top: 2.5rem;
+    padding: clamp(2rem, 6vw, 4.5rem);
+    border-radius: var(--radius);
+    background:
+        linear-gradient(90deg, rgb(11 11 13 / 98%) 0%, rgb(11 11 13 / 88%) 35%, rgb(11 11 13 / 48%) 63%, rgb(11 11 13 / 16%) 100%),
+        linear-gradient(115deg, transparent 54%, rgb(143 20 36 / 38%) 100%),
+        url("../images/hero-academia.jpg") 60% center / cover,
+        var(--color-background);
+    box-shadow: var(--shadow);
+    color: var(--color-text);
+}
+
+.hero-copy {
+    position: relative;
+    z-index: 1;
+    max-width: 37rem;
+}
+
+.eyebrow {
+    margin: 0 0 0.5rem;
+    color: var(--color-highlight);
+    font-size: 0.78rem;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+}
+
+.hero .eyebrow {
+    color: var(--color-highlight);
+}
+
+.hero h1 {
+    max-width: 12ch;
+    margin: 0;
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    letter-spacing: -0.045em;
+    line-height: 1.05;
+}
+
+.hero-description {
+    max-width: 36rem;
+    margin: 1.25rem 0 1.75rem;
+    color: var(--color-muted);
+    font-size: 1.1rem;
+}
+
+.button {
+    display: inline-flex;
+    min-height: 2.9rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0.7rem 1.15rem;
+    border: 2px solid var(--color-accent);
+    border-radius: 0.55rem;
+    background: var(--color-accent);
+    color: var(--color-background);
+    font-weight: 800;
+    text-decoration: none;
+    transition: background-color 160ms ease, color 160ms ease;
+}
+
+.button:hover {
+    background: transparent;
+    color: var(--color-text);
+}
+
+.section {
+    padding-block: 4rem 0.5rem;
+}
+
+.section-heading {
+    margin-bottom: 1.5rem;
+}
+
+.section-heading h1,
+.section-heading h2 {
+    margin: 0;
+    color: var(--color-text);
+    font-size: clamp(1.8rem, 4vw, 2.6rem);
+    letter-spacing: -0.035em;
+    line-height: 1.2;
+}
+
+.section-intro {
+    margin: 0.7rem 0 0;
+    color: var(--color-muted);
+}
+
+.contact-card {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.5rem;
+    padding: 1.5rem;
+    border: 1px solid var(--color-border);
+    border-left: 4px solid var(--color-accent);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    background: var(--color-surface);
+    font-style: normal;
+}
+
+.contact-card h3,
+.activity-card h3 {
+    margin: 0;
+    color: var(--color-text);
+}
+
+.contact-card p {
+    margin: 0.35rem 0 0;
+    color: var(--color-muted);
+}
+
+.contact-link {
+    display: inline-block;
+    margin-top: 0.35rem;
+    color: var(--color-highlight);
+    font-weight: 700;
+    text-decoration-thickness: 0.08em;
+    text-underline-offset: 0.18em;
+}
+
+.contact-link:hover {
+    color: var(--color-text);
+}
+
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 1rem;
+}
+
+.activity-card {
+    overflow: hidden;
+    min-height: 10rem;
+    padding: 0 1.4rem 1.4rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    box-shadow: 0 0.4rem 1.2rem rgb(0 0 0 / 22%);
+    transition: border-color 160ms ease, box-shadow 160ms ease, transform 160ms ease;
+}
+
+.activity-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--color-accent) 55%, var(--color-border));
+    box-shadow: 0 0.75rem 1.6rem rgb(0 0 0 / 34%);
+}
+
+.activity-image {
+    overflow: hidden;
+    aspect-ratio: 16 / 10;
+    margin: 0 -1.4rem 1rem;
+    background: var(--color-background);
+}
+
+.activity-image img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 220ms ease;
+}
+
+.activity-card:hover .activity-image img {
+    transform: scale(1.035);
+}
+
+.activity-image-placeholder {
+    display: flex;
+    width: 100%;
+    height: 100%;
+    min-height: 10rem;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    background:
+        linear-gradient(135deg, color-mix(in srgb, var(--color-depth) 42%, transparent), transparent 68%),
+        var(--color-background);
+    color: var(--color-muted);
+    font-size: 0.82rem;
+}
+
+.activity-image-placeholder span:first-child {
+    color: var(--color-accent);
+    font-size: 1.35rem;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+}
+
+.card-number {
+    display: inline-block;
+    margin-bottom: 0.65rem;
+    color: var(--color-accent);
+    font-size: 0.8rem;
+    font-weight: 800;
+}
+
+.activity-card p {
+    margin: 0.45rem 0 0;
+    color: var(--color-muted);
+}
+
+.empty-state {
+    grid-column: 1 / -1;
+    margin: 0;
+    padding: 1.25rem;
+    border-radius: 0.75rem;
+    background: var(--color-surface);
+    color: var(--color-muted);
+}
+
+.schedule-section {
+    padding-top: 3.5rem;
+}
+
+.table-wrapper {
+    overflow-x: auto;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius);
+    background: var(--color-surface);
+    box-shadow: var(--shadow);
+}
+
+.schedule-table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+.schedule-table th,
+.schedule-table td {
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.schedule-table th {
+    background: var(--color-accent);
+    color: var(--color-text);
+    font-size: 0.82rem;
+    letter-spacing: 0.04em;
+}
+
+.schedule-table tbody tr:last-child td {
+    border-bottom: 0;
+}
+
+.schedule-table tbody tr:hover {
+    background: color-mix(in srgb, var(--color-depth) 40%, var(--color-surface));
+}
+
+.schedule-table td:first-child {
+    color: var(--color-text);
+    font-weight: 700;
+}
+
+.schedule-table .empty-table {
+    padding: 1.5rem;
+    color: var(--color-muted);
+    text-align: center;
+}
+
+.site-footer {
+    margin-top: 4rem;
+    padding-block: 1.25rem;
+    background: var(--color-background);
+    color: var(--color-muted);
+    text-align: center;
+}
+
+.site-footer p {
+    margin: 0;
+}
+
+@media (max-width: 700px) {
+    .container {
+        width: min(100% - 2rem, 72rem);
+    }
+
+    .header-inner {
+        min-height: auto;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.65rem;
+        padding-block: 1rem;
+    }
+
+    .site-nav {
+        width: 100%;
+    }
+
+    .site-nav a {
+        padding-inline: 0.65rem;
+    }
+
+    .hero {
+        min-height: 28rem;
+        grid-template-columns: 1fr;
+        margin-top: 1.25rem;
+        padding: 2rem 1.5rem;
+        background:
+            linear-gradient(90deg, rgb(11 11 13 / 92%) 0%, rgb(11 11 13 / 72%) 58%, rgb(11 11 13 / 35%) 100%),
+            linear-gradient(0deg, rgb(11 11 13 / 26%), transparent 45%),
+            linear-gradient(115deg, transparent 48%, rgb(143 20 36 / 36%) 100%),
+            url("../images/hero-academia.jpg") 63% center / cover,
+            var(--color-background);
+    }
+
+    .section {
+        padding-top: 2.75rem;
+    }
+
+    .card-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .schedule-table {
+        min-width: 38rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .brand-logo {
+        width: 8.5rem;
+    }
+
+    .contact-card,
+    .card-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .schedule-table {
+        min-width: 0;
+    }
+
+    .schedule-table thead {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        clip-path: inset(50%);
+    }
+
+    .schedule-table,
+    .schedule-table tbody,
+    .schedule-table tr,
+    .schedule-table td {
+        display: block;
+        width: 100%;
+    }
+
+    .schedule-table tbody tr {
+        padding: 0.5rem 1rem;
+        border-bottom: 1px solid var(--color-border);
+    }
+
+    .schedule-table tbody tr:last-child {
+        border-bottom: 0;
+    }
+
+    .schedule-table td {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.55rem 0;
+        border: 0;
+        text-align: right;
+    }
+
+    .schedule-table td::before {
+        content: attr(data-label);
+        color: var(--color-muted);
+        font-weight: 700;
+        text-align: left;
+    }
+
+    .schedule-table .empty-table {
+        display: block;
+        text-align: left;
+    }
+
+    .schedule-table .empty-table::before {
+        content: none;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}

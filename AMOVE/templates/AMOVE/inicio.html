@@ -1,0 +1,70 @@
+{% extends "AMOVE/base.html" %}
+{% load static %}
+
+{% block title %}{{ academia.nome }}{% endblock %}
+
+{% block content %}
+    <section class="hero" aria-labelledby="titulo-academia">
+        <div class="hero-copy">
+            <p class="eyebrow">Movimento para uma vida melhor</p>
+            <h1 id="titulo-academia">{{ academia.nome }}</h1>
+            <p class="hero-description">Encontre uma atividade para o seu ritmo e venha se movimentar com a gente.</p>
+            <a class="button" href="{% url 'AMOVE:lista_turmas' %}">Conheça nossas turmas</a>
+        </div>
+    </section>
+
+    <section class="section" aria-labelledby="contato-titulo">
+        <div class="section-heading">
+            <p class="eyebrow">Estamos em Caruaru</p>
+            <h2 id="contato-titulo">Visite a academia</h2>
+        </div>
+        <address class="contact-card">
+            <div>
+                <h3>Endereço</h3>
+                <p>{{ academia.endereco }}</p>
+                <a class="contact-link" href="{{ academia.mapas_url }}">Ver no Google Maps</a>
+            </div>
+            <div>
+                <h3>Telefone</h3>
+                <p><a class="contact-link" href="{{ academia.telefone_link }}">{{ academia.telefone }}</a></p>
+            </div>
+        </address>
+    </section>
+
+    <section class="section" aria-labelledby="modalidades-titulo">
+        <div class="section-heading">
+            <p class="eyebrow">Encontre sua atividade</p>
+            <h2 id="modalidades-titulo">Modalidades</h2>
+        </div>
+        <div class="card-grid">
+            {% for card in modalidades %}
+                <article class="activity-card">
+                    <div class="activity-image">
+                        {% if card.imagem %}
+                            <img
+                                src="{% static card.imagem %}"
+                                alt="{{ card.texto_alternativo }}"
+                                loading="lazy"
+                                decoding="async"
+                            >
+                        {% else %}
+                            <div
+                                class="activity-image-placeholder"
+                                role="img"
+                                aria-label="{{ card.texto_alternativo }}"
+                            >
+                                <span aria-hidden="true">AMOVE</span>
+                                <span>Imagem em preparação</span>
+                            </div>
+                        {% endif %}
+                    </div>
+                    <span class="card-number" aria-hidden="true">{{ forloop.counter|stringformat:"02d" }}</span>
+                    <h3>{{ card.modalidade.nome }}</h3>
+                    <p>{{ card.modalidade.descricao|default:"Descrição não informada." }}</p>
+                </article>
+            {% empty %}
+                <p class="empty-state">Nenhuma modalidade ativa no momento.</p>
+            {% endfor %}
+        </div>
+    </section>
+{% endblock %}

@@ -1,0 +1,41 @@
+{% extends "AMOVE/base.html" %}
+
+{% block title %}Turmas | Academia Corpo em Movimento{% endblock %}
+
+{% block content %}
+    <section class="section schedule-section" aria-labelledby="turmas-titulo">
+        <div class="section-heading">
+            <p class="eyebrow">Organize sua semana</p>
+            <h1 id="turmas-titulo">Grade de turmas</h1>
+            <p class="section-intro">Confira os horários, conheça os instrutores e escolha sua próxima aula.</p>
+        </div>
+        <div class="table-wrapper" role="region" aria-labelledby="turmas-titulo" tabindex="0">
+            <table class="schedule-table">
+                <thead>
+                    <tr>
+                        <th scope="col">Modalidade</th>
+                        <th scope="col">Dia da semana</th>
+                        <th scope="col">Horário</th>
+                        <th scope="col">Instrutor</th>
+                        <th scope="col">Vagas</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for turma in turmas %}
+                        <tr>
+                            <td data-label="Modalidade">{{ turma.modalidade.nome }}</td>
+                            <td data-label="Dia da semana">{{ turma.get_dia_semana_display }}</td>
+                            <td data-label="Horário">{{ turma.horario|time:"H:i" }}</td>
+                            <td data-label="Instrutor">{{ turma.instrutor }}</td>
+                            <td data-label="Vagas">{{ turma.vagas }}</td>
+                        </tr>
+                    {% empty %}
+                        <tr>
+                            <td class="empty-table" colspan="5">Nenhuma turma cadastrada no momento.</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </section>
+{% endblock %}
