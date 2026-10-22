@@ -1,0 +1,479 @@
+:root,
+html[data-theme="dark"],
+html[data-theme="light"] {
+    color-scheme: dark;
+    --amove-background: #0B0B0D;
+    --amove-surface: #171719;
+    --amove-raised: #222226;
+    --amove-red: #D72638;
+    --amove-red-dark: #8F1424;
+    --amove-peach: #FFBE98;
+    --amove-text: #F5F5F5;
+    --amove-muted: #A6A6AA;
+    --amove-border: #39393D;
+
+    --primary: var(--amove-red);
+    --secondary: var(--amove-red-dark);
+    --accent: var(--amove-peach);
+    --primary-fg: var(--amove-text);
+    --body-fg: var(--amove-text);
+    --body-bg: var(--amove-background);
+    --body-quiet-color: var(--amove-muted);
+    --body-medium-color: var(--amove-muted);
+    --body-loud-color: var(--amove-text);
+    --header-color: var(--amove-text);
+    --header-branding-color: var(--amove-peach);
+    --header-bg: var(--amove-surface);
+    --header-link-color: var(--amove-text);
+    --breadcrumbs-fg: var(--amove-muted);
+    --breadcrumbs-link-fg: var(--amove-text);
+    --breadcrumbs-bg: var(--amove-surface);
+    --link-fg: var(--amove-peach);
+    --link-hover-color: var(--amove-red);
+    --link-selected-fg: var(--amove-peach);
+    --hairline-color: var(--amove-border);
+    --border-color: var(--amove-border);
+    --error-fg: #FF9A9A;
+    --message-debug-bg: var(--amove-raised);
+    --message-info-bg: #222226;
+    --message-info-icon: none;
+    --message-success-bg: #18352A;
+    --message-success-icon: none;
+    --message-warning-bg: #3B2B1F;
+    --message-warning-icon: none;
+    --message-error-bg: #3B1B22;
+    --message-error-icon: none;
+    --darkened-bg: var(--amove-surface);
+    --selected-bg: var(--amove-raised);
+    --selected-row: #382126;
+    --button-fg: var(--amove-text);
+    --button-bg: var(--amove-raised);
+    --button-hover-bg: #35353B;
+    --default-button-bg: var(--amove-red);
+    --default-button-hover-bg: var(--amove-red-dark);
+    --close-button-bg: #45454B;
+    --close-button-hover-bg: #5A5A62;
+    --delete-button-bg: #A91D2C;
+    --delete-button-hover-bg: var(--amove-red-dark);
+    --object-tools-fg: var(--amove-text);
+    --object-tools-bg: var(--amove-red-dark);
+    --object-tools-hover-bg: var(--amove-red);
+}
+
+html,
+body {
+    background: var(--amove-background);
+    color: var(--amove-text);
+}
+
+a {
+    transition: color 150ms ease, background-color 150ms ease;
+}
+
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible {
+    outline: 2px solid var(--amove-peach);
+    outline-offset: 2px;
+}
+
+#header {
+    min-height: 4.5rem;
+    padding-inline: 1.5rem;
+    border-bottom: 1px solid var(--amove-border);
+    background: var(--amove-surface);
+}
+
+.amove-admin-brand {
+    display: inline-flex;
+    min-height: 3rem;
+    align-items: center;
+    gap: 0.85rem;
+    color: var(--amove-text);
+    font-size: 1rem;
+    font-weight: 750;
+    text-decoration: none;
+}
+
+.amove-admin-brand:hover {
+    color: var(--amove-peach);
+}
+
+.amove-admin-brand img {
+    display: block;
+    width: 7.5rem;
+    max-height: 2.75rem;
+    object-fit: contain;
+}
+
+#user-tools {
+    color: var(--amove-muted);
+}
+
+#user-tools a,
+#user-tools button {
+    color: var(--amove-text);
+}
+
+#user-tools a:hover,
+#user-tools button:hover {
+    color: var(--amove-peach);
+}
+
+#user-tools #logout-form {
+    display: inline;
+}
+
+#user-tools #logout-form button {
+    padding: 0;
+    border: 0;
+    background: transparent;
+    font: inherit;
+}
+
+.breadcrumbs {
+    border-bottom: 1px solid var(--amove-border);
+}
+
+.main {
+    background: var(--amove-background);
+}
+
+#nav-sidebar {
+    border-right: 1px solid var(--amove-border);
+    background: var(--amove-surface);
+}
+
+#nav-sidebar .current-app .section:link,
+#nav-sidebar .current-app .section:visited,
+#nav-sidebar .current-model {
+    color: var(--amove-peach);
+}
+
+#nav-sidebar a:hover,
+#nav-sidebar a:focus {
+    background: var(--amove-raised);
+    color: var(--amove-peach);
+}
+
+#nav-sidebar .current-model {
+    border-left: 3px solid var(--amove-red);
+    background: #2A1A1E;
+}
+
+.module,
+.inline-group,
+.submit-row,
+#changelist,
+#changelist-filter,
+.selector-chosen h2 {
+    border-color: var(--amove-border);
+    border-radius: 0.65rem;
+    background: var(--amove-surface);
+}
+
+.module h2,
+.module caption,
+.inline-group h2,
+#changelist-filter h2,
+.selector-chosen h2 {
+    background: var(--amove-raised);
+    color: var(--amove-text);
+}
+
+.module table,
+#result_list {
+    border-color: var(--amove-border);
+}
+
+#result_list thead th {
+    background: var(--amove-red-dark);
+    color: var(--amove-text);
+}
+
+#result_list tbody tr {
+    background: var(--amove-surface);
+}
+
+#result_list tbody tr:nth-child(even) {
+    background: var(--amove-raised);
+}
+
+#result_list tbody tr:hover {
+    background: #302126;
+}
+
+#result_list td,
+#result_list th,
+.module td,
+.module th {
+    border-bottom-color: var(--amove-border);
+}
+
+#changelist-filter {
+    overflow: hidden;
+    border: 1px solid var(--amove-border);
+}
+
+#changelist-filter li.selected {
+    border-left: 3px solid var(--amove-red);
+    background: var(--amove-raised);
+}
+
+.paginator,
+#changelist .actions,
+#changelist .changelist-form-container {
+    color: var(--amove-muted);
+}
+
+input:not([type="checkbox"]):not([type="radio"]):not([type="submit"]):not([type="button"]),
+select,
+textarea,
+.vTextField,
+.vLargeTextField {
+    border: 1px solid var(--amove-border);
+    border-radius: 0.4rem;
+    background-color: var(--amove-raised);
+    color: var(--amove-text);
+}
+
+input::placeholder,
+textarea::placeholder {
+    color: var(--amove-muted);
+    opacity: 1;
+}
+
+input:disabled,
+select:disabled,
+textarea:disabled {
+    background-color: var(--amove-surface);
+    color: var(--amove-muted);
+    cursor: not-allowed;
+}
+
+input[type="checkbox"],
+input[type="radio"] {
+    accent-color: var(--amove-red);
+}
+
+.help,
+.helptext,
+.quiet,
+.description {
+    color: var(--amove-muted);
+}
+
+.errors,
+.errorlist,
+.form-row.errors {
+    color: var(--error-fg);
+}
+
+.errorlist {
+    padding: 0.65rem 0.85rem;
+    border-left: 3px solid var(--amove-red);
+    border-radius: 0.25rem;
+    background: #3B1B22;
+}
+
+.messagelist li {
+    border: 1px solid var(--amove-border);
+    border-radius: 0.5rem;
+    color: var(--amove-text);
+}
+
+.submit-row {
+    border: 1px solid var(--amove-border);
+}
+
+.submit-row input,
+.submit-row input.default,
+.button,
+input[type="submit"],
+a.button,
+.object-tools a {
+    min-height: 2.35rem;
+    border: 1px solid transparent;
+    border-radius: 0.4rem;
+    font-weight: 700;
+}
+
+.submit-row input.default,
+input[type="submit"].default,
+.default,
+.object-tools a.addlink {
+    background: var(--amove-red);
+    color: var(--amove-text);
+}
+
+.submit-row input.default:hover,
+input[type="submit"].default:hover,
+.default:hover,
+.object-tools a.addlink:hover {
+    background: var(--amove-red-dark);
+}
+
+.submit-row input:not(.default),
+.button,
+a.button {
+    background: var(--amove-raised);
+    color: var(--amove-text);
+}
+
+.submit-row input:not(.default):hover,
+.button:hover,
+a.button:hover {
+    background: #35353B;
+}
+
+.deletelink,
+.submit-row .deletelink,
+a.deletelink {
+    background: #5A1D27;
+    color: var(--amove-text);
+}
+
+.deletelink:hover,
+.submit-row .deletelink:hover,
+a.deletelink:hover {
+    background: var(--amove-red-dark);
+}
+
+body.login {
+    display: flex;
+    box-sizing: border-box;
+    min-height: 100vh;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    background:
+        radial-gradient(ellipse at 50% 15%, rgb(143 20 36 / 20%), transparent 48%),
+        var(--amove-background);
+}
+
+.login #container {
+    width: min(28rem, calc(100% - 2rem));
+    min-width: 0;
+    margin: auto;
+    overflow: hidden;
+    border: 1px solid var(--amove-border);
+    border-radius: 1rem;
+    background: var(--amove-surface);
+    box-shadow: 0 1.5rem 4rem rgb(0 0 0 / 38%);
+}
+
+.login #header {
+    justify-content: center;
+    padding: 1.5rem;
+    border-bottom: 1px solid var(--amove-border);
+    text-align: center;
+}
+
+.login .amove-admin-brand {
+    flex-direction: column;
+    gap: 0.65rem;
+    font-size: 0.95rem;
+}
+
+.login .amove-admin-brand img {
+    width: 10rem;
+    max-height: 4rem;
+}
+
+.login #content {
+    padding: 1.5rem;
+}
+
+.login #content-main {
+    width: 100%;
+}
+
+.login #login-form .form-row {
+    padding-block: 0.55rem;
+}
+
+.login #login-form .form-row label {
+    color: var(--amove-text);
+    font-weight: 650;
+}
+
+.login #login-form .form-row input {
+    width: 100%;
+    min-height: 2.9rem;
+    padding: 0.65rem 0.75rem;
+    border: 1px solid var(--amove-border);
+    border-radius: 0.45rem;
+    background: var(--amove-raised);
+    color: var(--amove-text);
+}
+
+.login #login-form .form-row input:focus {
+    border-color: var(--amove-red);
+    outline: 2px solid rgb(215 38 56 / 30%);
+    outline-offset: 1px;
+}
+
+.login .password-reset-link {
+    margin-top: 0.5rem;
+}
+
+.login .submit-row {
+    padding-top: 1.25rem;
+    border: 0;
+    background: transparent;
+}
+
+.login .submit-row input {
+    width: 100%;
+    min-height: 2.9rem;
+    border: 0;
+    border-radius: 0.45rem;
+    background: var(--amove-red);
+    color: var(--amove-text);
+    font-weight: 750;
+}
+
+.login .submit-row input:hover {
+    background: var(--amove-red-dark);
+}
+
+.login .errornote {
+    border: 1px solid #7B2B37;
+    border-radius: 0.45rem;
+    background: #3B1B22;
+    color: #FFB5B5;
+}
+
+@media (max-width: 767px) {
+    #header {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 1rem;
+    }
+
+    #user-tools {
+        margin-left: 0;
+        text-align: left;
+    }
+
+    .amove-admin-brand {
+        flex-wrap: wrap;
+        font-size: 0.9rem;
+    }
+
+    body.login {
+        padding: 1rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        scroll-behavior: auto !important;
+        transition-duration: 0.01ms !important;
+    }
+}

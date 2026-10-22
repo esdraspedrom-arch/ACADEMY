@@ -275,3 +275,127 @@ class AdminModalidadesTests(TestCase):
         )
         self.assertContains(ativas, "Ativa")
         self.assertContains(ativas, "Inativa")
+
+
+class AdminInterfaceTests(TestCase):
+    def setUp(self):
+        self.admin = get_user_model().objects.create_superuser(
+            username="admin-interface",
+            email="admin-interface@example.com",
+            password="senha-teste",
+        )
+        self.client.force_login(self.admin)
+
+    def test_login_e_painel_carregam_identidade_visual_amove(self):
+        self.client.logout()
+        login = self.client.get(reverse("admin:login"))
+
+        self.assertEqual(login.status_code, 200)
+        self.assertContains(login, "/static/AMOVE/css/admin.css")
+        self.assertContains(login, "/static/AMOVE/images/logo-amove.png")
+        self.assertContains(login, 'name="csrfmiddlewaretoken"')
+
+        falha_login = self.client.post(
+            reverse("admin:login"),
+            {"username": self.admin.username, "password": "senha-incorreta"},
+        )
+        self.assertEqual(falha_login.status_code, 200)
+        self.assertContains(falha_login, "errornote")
+
+        login_valido = self.client.post(
+            reverse("admin:login"),
+            {
+                "username": self.admin.username,
+                "password": "senha-teste",
+                "next": reverse("admin:index"),
+            },
+        )
+        self.assertEqual(login_valido.status_code, 302)
+        self.assertTrue(self.client.session.get("_auth_user_id"))
+        painel = self.client.get(reverse("admin:index"))
+
+        self.assertEqual(painel.status_code, 200)
+        self.assertContains(painel, "AMOVE | Academia Corpo em Movimento")
+        self.assertContains(painel, "Modalidades")
+        self.assertContains(painel, "Turmas")
+        self.assertContains(painel, "/static/AMOVE/css/admin.css")
+
+        publico = self.client.get(reverse("AMOVE:inicio"))
+        self.assertEqual(publico.status_code, 200)
+        self.assertContains(publico, "/static/AMOVE/css/style.css")
+        self.assertNotContains(publico, "/static/AMOVE/css/admin.css")
+
+    def test_modalidade_pode_ser_criada_editada_e_excluida_no_admin(self):
+        adicionar_url = reverse("admin:AMOVE_modalidade_add")
+        criada = self.client.post(
+            adicionar_url,
+            {"nome": "Pilates Admin", "descricao": "Descrição inicial", "ativa": "on"},
+        )
+
+        self.assertEqual(criada.status_code, 302)
+        modalidade = Modalidade.objects.get(nome="Pilates Admin")
+        editar = self.client.post(
+            reverse("admin:AMOVE_modalidade_change", args=[modalidade.pk]),
+            {
+                "nome": "Pilates Atualizado",
+                "descricao": "Descrição revisada",
+                "ativa": "on",
+            },
+        )
+        modalidade.refresh_from_db()
+        self.assertEqual(editar.status_code, 302)
+        self.assertEqual(modalidade.nome, "Pilates Atualizado")
+
+        confirmacao = self.client.get(
+            reverse("admin:AMOVE_modalidade_delete", args=[modalidade.pk])
+        )
+        exclusao = self.client.post(
+            reverse("admin:AMOVE_modalidade_delete", args=[modalidade.pk]),
+            {"post": "yes"},
+        )
+
+        self.assertEqual(confirmacao.status_code, 200)
+        self.assertContains(confirmacao, "Are you sure")
+        self.assertEqual(exclusao.status_code, 302)
+        self.assertFalse(Modalidade.objects.filter(pk=modalidade.pk).exists())
+
+    def test_turma_pode_ser_criada_editada_pesquisada_e_filtrada_no_admin(self):
+        modalidade = Modalidade.objects.create(nome="Funcional admin")
+        adicionar_url = reverse("admin:AMOVE_turma_add")
+        criada = self.client.post(
+            adicionar_url,
+            {
+                "modalidade": modalidade.pk,
+                "dia_semana": "segunda",
+                "horario": "18:00",
+                "instrutor": "Ana Admin",
+                "vagas": 10,
+            },
+        )
+
+        self.assertEqual(criada.status_code, 302)
+        turma = Turma.objects.get(instrutor="Ana Admin")
+        editar = self.client.post(
+            reverse("admin:AMOVE_turma_change", args=[turma.pk]),
+            {
+                "modalidade": modalidade.pk,
+                "dia_semana": "terca",
+                "horario": "19:00",
+                "instrutor": "Ana Atualizada",
+                "vagas": 8,
+            },
+        )
+        turma.refresh_from_db()
+        self.assertEqual(editar.status_code, 302)
+        self.assertEqual(turma.instrutor, "Ana Atualizada")
+
+        lista = self.client.get(
+            reverse("admin:AMOVE_turma_changelist"),
+            {"q": "Atualizada", "dia_semana__exact": "terca"},
+        )
+
+        self.assertEqual(lista.status_code, 200)
+        self.assertEqual(
+            list(lista.context["cl"].queryset),
+            [turma],
+        )

@@ -3,6 +3,11 @@ from django.contrib import admin
 from .models import Modalidade, Turma
 
 
+admin.site.site_header = "AMOVE | Academia Corpo em Movimento"
+admin.site.site_title = "Administração AMOVE"
+admin.site.index_title = "Painel administrativo"
+
+
 class SituacaoModalidadeFilter(admin.SimpleListFilter):
     title = "Situação"
     parameter_name = "situacao"
@@ -41,4 +46,3 @@ class TurmaAdmin(admin.ModelAdmin):
     search_fields = ("instrutor",)
     list_select_related = ("modalidade",)
     ordering = ("dia_semana", "horario")
-

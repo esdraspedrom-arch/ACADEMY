@@ -1,0 +1,16 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:"Administração AMOVE" }}{% endblock %}
+
+{% block branding %}
+    <a class="amove-admin-brand" href="{% url 'admin:index' %}">
+        <img src="{% static 'AMOVE/images/logo-amove.png' %}" alt="">
+        <span>{{ site_header|default:"AMOVE | Academia Corpo em Movimento" }}</span>
+    </a>
+{% endblock %}
+
+{% block responsive %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'AMOVE/css/admin.css' %}">
+{% endblock %}
