@@ -469,6 +469,325 @@ body.login {
     }
 }
 
+.amove-dashboard #content {
+    width: min(100%, 76rem);
+    margin: 0 auto;
+}
+
+.amove-dashboard .amove-dashboard-intro {
+    margin: 0 0 2.25rem;
+    padding: clamp(1.5rem, 4vw, 2.5rem);
+    border: 1px solid var(--amove-border);
+    border-left: 4px solid var(--amove-red);
+    border-radius: 0.8rem;
+    background:
+        linear-gradient(110deg, rgb(143 20 36 / 18%), transparent 58%),
+        var(--amove-surface);
+}
+
+.amove-dashboard .amove-dashboard-eyebrow {
+    margin: 0 0 0.45rem;
+    color: var(--amove-peach);
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.13em;
+    text-transform: uppercase;
+}
+
+.amove-dashboard .amove-dashboard-intro h1 {
+    margin: 0;
+    color: var(--amove-text);
+    font-size: clamp(1.9rem, 4vw, 2.7rem);
+    letter-spacing: -0.035em;
+    line-height: 1.15;
+}
+
+.amove-dashboard .amove-dashboard-intro > p:last-child {
+    max-width: 48rem;
+    margin: 0.8rem 0 0;
+    color: var(--amove-muted);
+    font-size: 1rem;
+}
+
+.amove-dashboard .amove-dashboard-section {
+    margin: 0 0 2rem;
+}
+
+.amove-dashboard .amove-dashboard-section-heading {
+    display: flex;
+    align-items: end;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.amove-dashboard .amove-dashboard-section-heading h2 {
+    margin: 0;
+    color: var(--amove-text);
+    font-size: clamp(1.35rem, 3vw, 1.7rem);
+    letter-spacing: -0.025em;
+}
+
+.amove-management-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 1.25rem;
+}
+
+.amove-management-card {
+    position: relative;
+    display: flex;
+    min-width: 0;
+    min-height: 18rem;
+    flex-direction: column;
+    overflow: hidden;
+    padding: clamp(1.35rem, 3vw, 2rem);
+    border: 1px solid var(--amove-border);
+    border-radius: 0.8rem;
+    background: var(--amove-surface);
+    transition: border-color 160ms ease, transform 160ms ease, background-color 160ms ease;
+}
+
+.amove-management-card:hover {
+    transform: translateY(-2px);
+    border-color: rgb(215 38 56 / 65%);
+    background: #1B1B1F;
+}
+
+.amove-card-accent {
+    position: absolute;
+    top: 0;
+    left: 1.5rem;
+    width: 3.5rem;
+    height: 3px;
+    background: var(--amove-red);
+}
+
+.amove-management-card-content {
+    flex: 1;
+}
+
+.amove-card-kicker {
+    margin: 0 0 0.55rem;
+    color: var(--amove-muted);
+    font-size: 0.8rem;
+    font-weight: 650;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.amove-management-card h3 {
+    margin: 0;
+    color: var(--amove-text);
+    font-size: clamp(1.5rem, 3vw, 1.85rem);
+    letter-spacing: -0.025em;
+}
+
+.amove-management-card-content > p:last-child {
+    max-width: 25rem;
+    margin: 0.7rem 0 1.5rem;
+    color: var(--amove-muted);
+    line-height: 1.65;
+}
+
+.amove-card-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.65rem;
+}
+
+.amove-button {
+    display: inline-flex;
+    min-height: 2.8rem;
+    align-items: center;
+    justify-content: center;
+    padding: 0.65rem 0.95rem;
+    border: 1px solid transparent;
+    border-radius: 0.45rem;
+    font-weight: 750;
+    text-align: center;
+    text-decoration: none;
+    transition: background-color 150ms ease, border-color 150ms ease, color 150ms ease;
+}
+
+.amove-button-primary {
+    background: var(--amove-red);
+    color: var(--amove-text);
+}
+
+.amove-button-primary:hover {
+    background: var(--amove-red-dark);
+    color: var(--amove-text);
+}
+
+.amove-button-secondary {
+    border-color: var(--amove-border);
+    background: var(--amove-raised);
+    color: var(--amove-text);
+}
+
+.amove-button-secondary:hover {
+    border-color: var(--amove-red);
+    background: #302126;
+    color: var(--amove-peach);
+}
+
+.amove-access-links,
+.amove-activity-card {
+    border: 1px solid var(--amove-border);
+    border-radius: 0.8rem;
+    background: var(--amove-surface);
+}
+
+.amove-access-links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 0;
+    overflow: hidden;
+}
+
+.amove-access-item {
+    display: grid;
+    gap: 0.55rem;
+    padding: 1.15rem 1.35rem;
+}
+
+.amove-access-item + .amove-access-item {
+    border-left: 1px solid var(--amove-border);
+}
+
+.amove-access-item > span {
+    color: var(--amove-text);
+    font-weight: 750;
+}
+
+.amove-access-item > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1rem;
+}
+
+.amove-access-item a {
+    color: var(--amove-peach);
+    font-size: 0.9rem;
+    font-weight: 650;
+    text-underline-offset: 0.18em;
+}
+
+.amove-activity-card {
+    padding: clamp(1.25rem, 3vw, 1.75rem);
+}
+
+.amove-activity-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.amove-activity-item {
+    display: grid;
+    grid-template-columns: 0.7rem minmax(0, 1fr);
+    align-items: start;
+    gap: 0.85rem;
+    padding: 1rem 0;
+    border-top: 1px solid var(--amove-border);
+}
+
+.amove-activity-indicator {
+    width: 0.6rem;
+    height: 0.6rem;
+    margin-top: 0.35rem;
+    border-radius: 50%;
+    background: var(--amove-peach);
+}
+
+.amove-activity-indicator.is-addition {
+    background: #69B98A;
+}
+
+.amove-activity-indicator.is-deletion {
+    background: var(--amove-red);
+}
+
+.amove-activity-meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.45rem 0.7rem;
+    color: var(--amove-muted);
+    font-size: 0.82rem;
+}
+
+.amove-activity-action {
+    color: var(--amove-peach);
+    font-weight: 750;
+}
+
+.amove-activity-meta time {
+    margin-left: auto;
+    color: var(--amove-muted);
+}
+
+.amove-activity-object {
+    margin: 0.35rem 0 0;
+    color: var(--amove-text);
+    font-weight: 650;
+    overflow-wrap: anywhere;
+}
+
+.amove-activity-object a {
+    color: var(--amove-text);
+    text-decoration: none;
+}
+
+.amove-activity-object a:hover {
+    color: var(--amove-peach);
+    text-decoration: underline;
+    text-underline-offset: 0.18em;
+}
+
+.amove-activity-empty {
+    margin: 0;
+    padding: 1.1rem 0 0;
+    border-top: 1px solid var(--amove-border);
+    color: var(--amove-muted);
+}
+
+@media (max-width: 700px) {
+    .amove-management-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .amove-management-card {
+        min-height: 0;
+    }
+}
+
+@media (max-width: 480px) {
+    .amove-dashboard .amove-dashboard-intro {
+        margin-bottom: 1.75rem;
+    }
+
+    .amove-access-links {
+        grid-template-columns: 1fr;
+    }
+
+    .amove-access-item + .amove-access-item {
+        border-top: 1px solid var(--amove-border);
+        border-left: 0;
+    }
+
+    .amove-card-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .amove-card-actions .amove-button {
+        width: 100%;
+    }
+}
+
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,

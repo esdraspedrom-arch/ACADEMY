@@ -1,0 +1,192 @@
+{% extends "admin/base_site.html" %}
+{% load i18n log %}
+
+{% block coltype %}colM{% endblock %}
+{% block bodyclass %}{{ block.super }} amove-dashboard{% endblock %}
+{% block nav-breadcrumbs %}{% endblock %}
+{% block nav-sidebar %}{% endblock %}
+{% block content_title %}{% endblock %}
+{% block object-tools %}{% endblock %}
+
+{% block content %}
+    <section class="amove-dashboard-intro" aria-labelledby="dashboard-title">
+        <p class="amove-dashboard-eyebrow">Academia Corpo em Movimento</p>
+        <h1 id="dashboard-title">Painel administrativo</h1>
+        <p>Gerencie as modalidades, organize as turmas e mantenha as informações da academia atualizadas.</p>
+    </section>
+
+    <section class="amove-dashboard-section" aria-labelledby="management-title">
+        <div class="amove-dashboard-section-heading">
+            <div>
+                <p class="amove-dashboard-eyebrow">Acesso rápido</p>
+                <h2 id="management-title">Gerenciamento</h2>
+            </div>
+        </div>
+
+        <div class="amove-management-grid">
+            {% if perms.AMOVE.view_modalidade or perms.AMOVE.change_modalidade or perms.AMOVE.add_modalidade %}
+                <article class="amove-management-card">
+                    <span class="amove-card-accent" aria-hidden="true"></span>
+                    <div class="amove-management-card-content">
+                        <p class="amove-card-kicker">Atividades da academia</p>
+                        <h3>Modalidades</h3>
+                        <p>Gerencie as atividades oferecidas pela academia.</p>
+                    </div>
+                    <div class="amove-card-actions">
+                        {% if perms.AMOVE.view_modalidade or perms.AMOVE.change_modalidade %}
+                            <a class="amove-button amove-button-primary" href="{% url 'admin:AMOVE_modalidade_changelist' %}">
+                                Gerenciar modalidades
+                            </a>
+                        {% endif %}
+                        {% if perms.AMOVE.add_modalidade %}
+                            <a class="amove-button amove-button-secondary" href="{% url 'admin:AMOVE_modalidade_add' %}">
+                                Cadastrar modalidade
+                            </a>
+                        {% endif %}
+                    </div>
+                </article>
+            {% endif %}
+
+            {% if perms.AMOVE.view_turma or perms.AMOVE.change_turma or perms.AMOVE.add_turma %}
+                <article class="amove-management-card">
+                    <span class="amove-card-accent" aria-hidden="true"></span>
+                    <div class="amove-management-card-content">
+                        <p class="amove-card-kicker">Agenda de aulas</p>
+                        <h3>Turmas</h3>
+                        <p>Organize horários, instrutores e vagas disponíveis.</p>
+                    </div>
+                    <div class="amove-card-actions">
+                        {% if perms.AMOVE.view_turma or perms.AMOVE.change_turma %}
+                            <a class="amove-button amove-button-primary" href="{% url 'admin:AMOVE_turma_changelist' %}">
+                                Gerenciar turmas
+                            </a>
+                        {% endif %}
+                        {% if perms.AMOVE.add_turma %}
+                            <a class="amove-button amove-button-secondary" href="{% url 'admin:AMOVE_turma_add' %}">
+                                Cadastrar turma
+                            </a>
+                        {% endif %}
+                    </div>
+                </article>
+            {% endif %}
+        </div>
+    </section>
+
+    {% if perms.auth.view_user or perms.auth.change_user or perms.auth.add_user or perms.auth.view_group or perms.auth.change_group or perms.auth.add_group %}
+        <section class="amove-dashboard-section amove-access-section" aria-labelledby="access-title">
+            <div class="amove-dashboard-section-heading">
+                <div>
+                    <p class="amove-dashboard-eyebrow">Acesso e segurança</p>
+                    <h2 id="access-title">Contas e permissões</h2>
+                </div>
+            </div>
+            <div class="amove-access-links">
+                {% if perms.auth.view_user or perms.auth.change_user or perms.auth.add_user %}
+                    <div class="amove-access-item">
+                        <span>Usuários</span>
+                        <div>
+                            {% if perms.auth.view_user or perms.auth.change_user %}
+                                <a href="{% url 'admin:auth_user_changelist' %}">Gerenciar usuários</a>
+                            {% endif %}
+                            {% if perms.auth.add_user %}
+                                <a href="{% url 'admin:auth_user_add' %}">Adicionar usuário</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+                {% if perms.auth.view_group or perms.auth.change_group or perms.auth.add_group %}
+                    <div class="amove-access-item">
+                        <span>Grupos</span>
+                        <div>
+                            {% if perms.auth.view_group or perms.auth.change_group %}
+                                <a href="{% url 'admin:auth_group_changelist' %}">Gerenciar grupos</a>
+                            {% endif %}
+                            {% if perms.auth.add_group %}
+                                <a href="{% url 'admin:auth_group_add' %}">Adicionar grupo</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    {% endif %}
+
+    <section class="amove-dashboard-section amove-activity-card" aria-labelledby="activity-title">
+        <div class="amove-dashboard-section-heading">
+            <div>
+                <p class="amove-dashboard-eyebrow">Histórico administrativo</p>
+                <h2 id="activity-title">Atividade recente</h2>
+            </div>
+        </div>
+
+        {% get_admin_log 8 as admin_log for_user user %}
+        {% if admin_log %}
+            <ol class="amove-activity-list">
+                {% for entry in admin_log %}
+                    <li class="amove-activity-item">
+                        <span
+                            class="amove-activity-indicator{% if entry.is_addition %} is-addition{% elif entry.is_deletion %} is-deletion{% else %} is-change{% endif %}"
+                            aria-hidden="true"
+                        ></span>
+                        <div class="amove-activity-details">
+                            <div class="amove-activity-meta">
+                                {% if entry.is_addition %}
+                                    <span class="amove-activity-action">Adicionado</span>
+                                {% elif entry.is_deletion %}
+                                    <span class="amove-activity-action">Excluído</span>
+                                {% else %}
+                                    <span class="amove-activity-action">Alterado</span>
+                                {% endif %}
+                                {% if entry.content_type.app_label == "AMOVE" and entry.content_type.model == "modalidade" %}
+                                    <span>Modalidade</span>
+                                {% elif entry.content_type.app_label == "AMOVE" and entry.content_type.model == "turma" %}
+                                    <span>Turma</span>
+                                {% elif entry.content_type %}
+                                    <span>{{ entry.content_type.name }}</span>
+                                {% else %}
+                                    <span>Objeto administrativo</span>
+                                {% endif %}
+                                <time datetime="{{ entry.action_time|date:'c' }}">{{ entry.action_time|date:"d/m/Y H:i" }}</time>
+                            </div>
+                            <p class="amove-activity-object">
+                                {% if not entry.is_deletion and entry.get_admin_url %}
+                                    {% if entry.content_type.app_label == "AMOVE" and entry.content_type.model == "modalidade" %}
+                                        {% if perms.AMOVE.view_modalidade or perms.AMOVE.change_modalidade %}
+                                            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                                        {% else %}
+                                            {{ entry.object_repr }}
+                                        {% endif %}
+                                    {% elif entry.content_type.app_label == "AMOVE" and entry.content_type.model == "turma" %}
+                                        {% if perms.AMOVE.view_turma or perms.AMOVE.change_turma %}
+                                            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                                        {% else %}
+                                            {{ entry.object_repr }}
+                                        {% endif %}
+                                    {% elif entry.content_type.app_label == "auth" and entry.content_type.model == "user" %}
+                                        {% if perms.auth.view_user or perms.auth.change_user %}
+                                            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                                        {% else %}
+                                            {{ entry.object_repr }}
+                                        {% endif %}
+                                    {% elif entry.content_type.app_label == "auth" and entry.content_type.model == "group" %}
+                                        {% if perms.auth.view_group or perms.auth.change_group %}
+                                            <a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>
+                                        {% else %}
+                                            {{ entry.object_repr }}
+                                        {% endif %}
+                                    {% else %}
+                                        {{ entry.object_repr }}
+                                    {% endif %}
+                                {% else %}
+                                    {{ entry.object_repr }}
+                                {% endif %}
+                            </p>
+                        </div>
+                    </li>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <p class="amove-activity-empty">Nenhuma atividade recente para exibir.</p>
+        {% endif %}
+    </section>
+{% endblock %}

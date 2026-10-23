@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.contrib.auth.models import Permission
 from django.test import Client, TestCase
 from django.urls import reverse
 
@@ -324,6 +325,82 @@ class AdminInterfaceTests(TestCase):
         self.assertEqual(publico.status_code, 200)
         self.assertContains(publico, "/static/AMOVE/css/style.css")
         self.assertNotContains(publico, "/static/AMOVE/css/admin.css")
+
+    def test_dashboard_exibe_cards_permitidos_e_atividade_nativa(self):
+        Modalidade.objects.create(nome="Yoga")
+
+        painel_vazio = self.client.get(reverse("admin:index"))
+        self.assertEqual(painel_vazio.status_code, 200)
+        self.assertTemplateUsed(painel_vazio, "admin/index.html")
+        self.assertContains(painel_vazio, "/static/AMOVE/css/admin.css")
+        self.assertContains(painel_vazio, "/static/AMOVE/images/logo-amove.png")
+        self.assertContains(painel_vazio, "Painel administrativo")
+        self.assertContains(
+            painel_vazio,
+            "Gerencie as modalidades, organize as turmas e mantenha as informações da academia atualizadas.",
+        )
+        self.assertContains(painel_vazio, "Gerenciar modalidades")
+        self.assertContains(painel_vazio, reverse("admin:AMOVE_modalidade_changelist"))
+        self.assertContains(painel_vazio, "Gerenciar turmas")
+        self.assertContains(painel_vazio, reverse("admin:AMOVE_turma_changelist"))
+        self.assertContains(painel_vazio, "Gerenciar usuários")
+        self.assertContains(painel_vazio, "Gerenciar grupos")
+        self.assertContains(painel_vazio, "Nenhuma atividade recente para exibir.")
+        self.assertNotContains(painel_vazio, "app-list")
+
+        criacao = self.client.post(
+            reverse("admin:AMOVE_modalidade_add"),
+            {"nome": "Pilates recente", "descricao": "", "ativa": "on"},
+        )
+        self.assertEqual(criacao.status_code, 302)
+
+        painel_com_atividade = self.client.get(reverse("admin:index"))
+        self.assertContains(painel_com_atividade, "Atividade recente")
+        self.assertContains(painel_com_atividade, "Adicionado")
+        self.assertContains(painel_com_atividade, "Modalidade")
+        self.assertContains(painel_com_atividade, "Pilates recente")
+        self.assertContains(
+            painel_com_atividade,
+            reverse(
+                "admin:AMOVE_modalidade_change",
+                args=[Modalidade.objects.get(nome="Pilates recente").pk],
+            ),
+        )
+
+    def test_dashboard_nao_exibe_acoes_sem_permissao_do_modelo(self):
+        operador = get_user_model().objects.create_user(
+            username="operador-sem-permissoes",
+            password="senha-teste",
+            is_staff=True,
+        )
+        self.client.force_login(operador)
+
+        response = self.client.get(reverse("admin:index"))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, "Gerenciar modalidades")
+        self.assertNotContains(response, "Cadastrar modalidade")
+        self.assertNotContains(response, "Gerenciar turmas")
+        self.assertNotContains(response, "Cadastrar turma")
+        self.assertNotContains(response, "Gerenciar usuários")
+        self.assertNotContains(response, "Gerenciar grupos")
+
+        operador.user_permissions.add(
+            Permission.objects.get(
+                content_type__app_label="AMOVE",
+                codename="view_modalidade",
+            ),
+            Permission.objects.get(
+                content_type__app_label="AMOVE",
+                codename="add_modalidade",
+            ),
+        )
+        response_com_permissao = self.client.get(reverse("admin:index"))
+
+        self.assertContains(response_com_permissao, "Gerenciar modalidades")
+        self.assertContains(response_com_permissao, "Cadastrar modalidade")
+        self.assertNotContains(response_com_permissao, "Gerenciar turmas")
+        self.assertNotContains(response_com_permissao, "Cadastrar turma")
 
     def test_modalidade_pode_ser_criada_editada_e_excluida_no_admin(self):
         adicionar_url = reverse("admin:AMOVE_modalidade_add")
