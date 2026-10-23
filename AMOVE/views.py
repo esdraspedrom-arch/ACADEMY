@@ -1,10 +1,17 @@
 from urllib.parse import quote
+from functools import wraps
 
+from django.contrib import messages
+from django.contrib.auth.decorators import login_required
 from django.contrib.staticfiles import finders
 from django.db.models import Case, IntegerField, Value, When
-from django.shortcuts import render
+from django.http import HttpResponseForbidden
+from django.shortcuts import redirect, render
+from django.urls import reverse
+from django.views.decorators.http import require_GET, require_POST
 from django.utils.text import slugify
 
+from .forms import ModalidadeForm, TurmaForm
 from .models import Modalidade, Turma
 
 
@@ -20,6 +27,21 @@ ACADEMIA = {
     "telefone": "(81) 98888-7777",
     "telefone_link": "tel:+5581988887777",
 }
+
+
+def _is_staff(user):
+    return user.is_staff
+
+
+def staff_required(view_func):
+    @wraps(view_func)
+    @login_required(login_url="admin:login")
+    def wrapped_view(request, *args, **kwargs):
+        if not _is_staff(request.user):
+            return HttpResponseForbidden("Acesso restrito a administradores.")
+        return view_func(request, *args, **kwargs)
+
+    return wrapped_view
 
 
 def inicio(request):
@@ -105,5 +127,62 @@ def lista_turmas(request):
                 "instrutor": instrutor,
             },
             "filtros_aplicados": bool(modalidade_id or dia_semana or instrutor),
+        },
+    )
+
+
+@staff_required
+@require_GET
+def cadastro(request):
+    return render(
+        request,
+        "AMOVE/cadastro.html",
+        {
+            "modalidade_form": ModalidadeForm(),
+            "turma_form": TurmaForm(),
+        },
+    )
+
+
+@staff_required
+@require_POST
+def cadastrar_modalidade(request):
+    form = ModalidadeForm(request.POST)
+    if form.is_valid():
+        modalidade = form.save()
+        messages.success(
+            request,
+            f'A modalidade "{modalidade.nome}" foi cadastrada com sucesso.',
+        )
+        return redirect(f"{reverse('AMOVE:cadastro')}#cadastro-modalidade")
+
+    return render(
+        request,
+        "AMOVE/cadastro.html",
+        {
+            "modalidade_form": form,
+            "turma_form": TurmaForm(),
+        },
+    )
+
+
+@staff_required
+@require_POST
+def cadastrar_turma(request):
+    form = TurmaForm(request.POST)
+    if form.is_valid():
+        turma = form.save()
+        messages.success(
+            request,
+            f"A turma de {turma.modalidade.nome} foi cadastrada com sucesso.",
+        )
+        return redirect(f"{reverse('AMOVE:cadastro')}#cadastro-turma")
+
+    return render(
+        request,
+        "AMOVE/cadastro.html",
+        {
+            "modalidade_form": ModalidadeForm(),
+            "turma_form": form,
         },
     )

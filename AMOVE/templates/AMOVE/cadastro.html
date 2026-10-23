@@ -1,0 +1,82 @@
+{% extends "AMOVE/base.html" %}
+
+{% block title %}Cadastro | Academia Corpo em Movimento{% endblock %}
+
+{% block content %}
+    <section class="section registration-section" aria-labelledby="cadastro-titulo">
+        <div class="section-heading">
+            <p class="eyebrow">Área administrativa</p>
+            <h1 id="cadastro-titulo">Cadastro</h1>
+            <p class="section-intro">
+                Cadastre modalidades e organize novas turmas da academia.
+            </p>
+        </div>
+
+        {% if messages %}
+            <ul class="registration-messages" aria-live="polite">
+                {% for message in messages %}
+                    <li class="{{ message.tags }}">{{ message }}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+
+        <div class="registration-grid">
+            <section id="cadastro-modalidade" class="registration-card" aria-labelledby="modalidade-titulo">
+                <div class="registration-card-heading">
+                    <p class="eyebrow">Nova atividade</p>
+                    <h2 id="modalidade-titulo">Cadastrar modalidade</h2>
+                    <p>Adicione uma atividade que poderá ser exibida no site.</p>
+                </div>
+                <form
+                    class="registration-form"
+                    method="post"
+                    action="{% url 'AMOVE:cadastrar_modalidade' %}"
+                >
+                    {% csrf_token %}
+                    {% if modalidade_form.non_field_errors %}
+                        <div class="form-errors" role="alert">{{ modalidade_form.non_field_errors }}</div>
+                    {% endif %}
+                    {% for field in modalidade_form %}
+                        <div class="registration-field{% if field.errors %} has-errors{% endif %}">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.help_text %}<p class="field-help">{{ field.help_text }}</p>{% endif %}
+                            {% if field.errors %}<div class="field-errors" role="alert">{{ field.errors }}</div>{% endif %}
+                        </div>
+                    {% endfor %}
+                    <button class="button" type="submit">Salvar modalidade</button>
+                </form>
+            </section>
+
+            <section id="cadastro-turma" class="registration-card" aria-labelledby="turma-titulo">
+                <div class="registration-card-heading">
+                    <p class="eyebrow">Novo horário</p>
+                    <h2 id="turma-titulo">Cadastrar turma</h2>
+                    <p>Defina modalidade, dia, horário, instrutor e vagas.</p>
+                </div>
+                <form
+                    class="registration-form"
+                    method="post"
+                    action="{% url 'AMOVE:cadastrar_turma' %}"
+                >
+                    {% csrf_token %}
+                    {% if turma_form.non_field_errors %}
+                        <div class="form-errors" role="alert">{{ turma_form.non_field_errors }}</div>
+                    {% endif %}
+                    {% for field in turma_form %}
+                        <div class="registration-field{% if field.errors %} has-errors{% endif %}">
+                            {{ field.label_tag }}
+                            {{ field }}
+                            {% if field.help_text %}<p class="field-help">{{ field.help_text }}</p>{% endif %}
+                            {% if field.errors %}<div class="field-errors" role="alert">{{ field.errors }}</div>{% endif %}
+                        </div>
+                    {% endfor %}
+                    <button class="button" type="submit">Salvar turma</button>
+                </form>
+                <a class="registration-back-link" href="{% url 'AMOVE:lista_turmas' %}">
+                    Voltar para a grade de turmas
+                </a>
+            </section>
+        </div>
+    </section>
+{% endblock %}

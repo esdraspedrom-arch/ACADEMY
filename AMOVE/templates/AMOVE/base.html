@@ -20,8 +20,15 @@
                 >
             </a>
             <nav class="site-nav" aria-label="Navegação principal">
-                <a href="/">Início</a>
-                <a href="/turmas/">Turmas</a>
+                <a href="{% url 'AMOVE:inicio' %}">Início</a>
+                <a href="{% url 'AMOVE:lista_turmas' %}">Turmas</a>
+                {% if user.is_authenticated and user.is_staff %}
+                    <a href="{% url 'AMOVE:cadastro' %}">Cadastro</a>
+                    <form class="nav-logout" method="post" action="{% url 'admin:logout' %}">
+                        {% csrf_token %}
+                        <button type="submit">Sair</button>
+                    </form>
+                {% endif %}
             </nav>
         </div>
     </header>

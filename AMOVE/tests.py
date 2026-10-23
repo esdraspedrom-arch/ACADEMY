@@ -1,5 +1,5 @@
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import Client, TestCase
 from django.urls import reverse
 
 from .models import Modalidade, Turma
@@ -399,3 +399,228 @@ class AdminInterfaceTests(TestCase):
             list(lista.context["cl"].queryset),
             [turma],
         )
+
+
+class CadastroViewsTests(TestCase):
+    def setUp(self):
+        user_model = get_user_model()
+        self.administrador = user_model.objects.create_user(
+            username="cadastro-admin",
+            password="senha-teste",
+            is_staff=True,
+        )
+        self.usuario_comum = user_model.objects.create_user(
+            username="cadastro-comum",
+            password="senha-teste",
+            is_staff=False,
+        )
+
+    def test_menu_exibe_cadastro_e_sair_somente_para_usuario_staff(self):
+        inicio_url = reverse("AMOVE:inicio")
+
+        visitante = self.client.get(inicio_url)
+        self.assertNotContains(visitante, ">Cadastro</a>", html=False)
+        self.assertNotContains(visitante, ">Sair</button>", html=False)
+
+        self.client.force_login(self.usuario_comum)
+        usuario_comum = self.client.get(inicio_url)
+        self.assertNotContains(usuario_comum, ">Cadastro</a>", html=False)
+        self.assertNotContains(usuario_comum, ">Sair</button>", html=False)
+
+        self.client.force_login(self.administrador)
+        administrador = self.client.get(inicio_url)
+        self.assertContains(
+            administrador,
+            f'href="{reverse("AMOVE:cadastro")}"',
+        )
+        self.assertContains(
+            administrador,
+            f'action="{reverse("admin:logout")}"',
+        )
+        self.assertContains(administrador, 'name="csrfmiddlewaretoken"')
+
+    def test_visitante_e_redirecionado_para_login_e_nao_pode_cadastrar(self):
+        response = self.client.get(reverse("AMOVE:cadastro"))
+        post = self.client.post(
+            reverse("AMOVE:cadastrar_modalidade"),
+            {"nome": "Modalidade não autorizada", "ativa": "on"},
+        )
+
+        self.assertEqual(response.status_code, 302)
+        self.assertIn(reverse("admin:login"), response.url)
+        self.assertEqual(post.status_code, 302)
+        self.assertIn(reverse("admin:login"), post.url)
+        self.assertFalse(
+            Modalidade.objects.filter(nome="Modalidade não autorizada").exists()
+        )
+
+    def test_usuario_comum_recebe_403_na_pagina_e_nos_posts(self):
+        self.client.force_login(self.usuario_comum)
+
+        pagina = self.client.get(reverse("AMOVE:cadastro"))
+        modalidade = self.client.post(
+            reverse("AMOVE:cadastrar_modalidade"),
+            {"nome": "Modalidade bloqueada", "ativa": "on"},
+        )
+        turma = self.client.post(
+            reverse("AMOVE:cadastrar_turma"),
+            {
+                "modalidade": "",
+                "dia_semana": "segunda",
+                "horario": "18:00",
+                "instrutor": "Pessoa não autorizada",
+                "vagas": 10,
+            },
+        )
+
+        self.assertEqual(pagina.status_code, 403)
+        self.assertEqual(modalidade.status_code, 403)
+        self.assertEqual(turma.status_code, 403)
+        self.assertFalse(Modalidade.objects.filter(nome="Modalidade bloqueada").exists())
+        self.assertFalse(Turma.objects.filter(instrutor="Pessoa não autorizada").exists())
+
+    def test_administrador_cadastra_modalidade_e_duplicidade_e_validada(self):
+        self.client.force_login(self.administrador)
+        formulario = self.client.get(reverse("AMOVE:cadastro"))
+        self.assertEqual(formulario.status_code, 200)
+        self.assertContains(formulario, "Cadastrar modalidade")
+        self.assertContains(formulario, "Cadastrar turma")
+
+        criada = self.client.post(
+            reverse("AMOVE:cadastrar_modalidade"),
+            {
+                "nome": "Boxe",
+                "descricao": "Treino de boxe.",
+                "ativa": "on",
+            },
+        )
+
+        self.assertEqual(criada.status_code, 302)
+        modalidade = Modalidade.objects.get(nome="Boxe")
+        self.assertTrue(modalidade.ativa)
+        confirmacao = self.client.get(reverse("AMOVE:cadastro"))
+        self.assertEqual(
+            list(confirmacao.context["messages"])[0].message,
+            'A modalidade "Boxe" foi cadastrada com sucesso.',
+        )
+
+        duplicada = self.client.post(
+            reverse("AMOVE:cadastrar_modalidade"),
+            {"nome": "Boxe", "descricao": "", "ativa": "on"},
+        )
+
+        self.assertEqual(duplicada.status_code, 200)
+        self.assertContains(duplicada, "Já existe uma modalidade com este nome.")
+        self.assertEqual(Modalidade.objects.filter(nome="Boxe").count(), 1)
+
+    def test_modalidade_inativa_nao_aparece_publicamente(self):
+        self.client.force_login(self.administrador)
+        response = self.client.post(
+            reverse("AMOVE:cadastrar_modalidade"),
+            {"nome": "Atividade reservada", "descricao": "", "ativa": ""},
+        )
+
+        self.assertEqual(response.status_code, 302)
+        modalidade = Modalidade.objects.get(nome="Atividade reservada")
+        self.assertFalse(modalidade.ativa)
+        inicio = self.client.get(reverse("AMOVE:inicio"))
+        self.assertNotContains(inicio, "Atividade reservada")
+
+    def test_administrador_cadastra_turma_e_a_grade_mantem_filtros(self):
+        modalidade = Modalidade.objects.create(nome="Boxe")
+        self.client.force_login(self.administrador)
+
+        response = self.client.post(
+            reverse("AMOVE:cadastrar_turma"),
+            {
+                "modalidade": modalidade.pk,
+                "dia_semana": "quarta",
+                "horario": "18:30",
+                "instrutor": "Joana Instrutora",
+                "vagas": 12,
+            },
+        )
+
+        self.assertEqual(response.status_code, 302)
+        turma = Turma.objects.get(instrutor="Joana Instrutora")
+        self.assertEqual(turma.horario.strftime("%H:%M"), "18:30")
+        self.assertEqual(turma.vagas, 12)
+        self.assertContains(
+            self.client.get(reverse("AMOVE:cadastro")),
+            "A turma de Boxe foi cadastrada",
+        )
+
+        grade = self.client.get(
+            reverse("AMOVE:lista_turmas"),
+            {
+                "modalidade": modalidade.pk,
+                "dia": "quarta",
+                "instrutor": "joana",
+            },
+        )
+
+        self.assertEqual(list(grade.context["turmas"]), [turma])
+        self.assertContains(grade, "18:30")
+
+    def test_erros_de_horario_e_vagas_sao_mostrados_e_nao_criam_turma(self):
+        modalidade = Modalidade.objects.create(nome="Funcional")
+        self.client.force_login(self.administrador)
+
+        resposta_horario = self.client.post(
+            reverse("AMOVE:cadastrar_turma"),
+            {
+                "modalidade": modalidade.pk,
+                "dia_semana": "segunda",
+                "horario": "25:90",
+                "instrutor": "Instrutor",
+                "vagas": 5,
+            },
+        )
+        resposta_vagas = self.client.post(
+            reverse("AMOVE:cadastrar_turma"),
+            {
+                "modalidade": modalidade.pk,
+                "dia_semana": "segunda",
+                "horario": "18:00",
+                "instrutor": "Instrutor",
+                "vagas": -1,
+            },
+        )
+
+        self.assertEqual(resposta_horario.status_code, 200)
+        self.assertContains(
+            resposta_horario,
+            "Informe um horário válido no formato de 24 horas (HH:MM).",
+        )
+        self.assertEqual(resposta_vagas.status_code, 200)
+        self.assertContains(
+            resposta_vagas,
+            "A quantidade de vagas não pode ser negativa.",
+        )
+        self.assertEqual(Turma.objects.count(), 0)
+
+    def test_post_de_cadastro_exige_csrf(self):
+        cliente_com_csrf = Client(enforce_csrf_checks=True)
+        cliente_com_csrf.force_login(self.administrador)
+        pagina = cliente_com_csrf.get(reverse("AMOVE:cadastro"))
+
+        self.assertEqual(pagina.status_code, 200)
+        bloqueada = cliente_com_csrf.post(
+            reverse("AMOVE:cadastrar_modalidade"),
+            {"nome": "Sem token", "ativa": "on"},
+        )
+        self.assertEqual(bloqueada.status_code, 403)
+        self.assertFalse(Modalidade.objects.filter(nome="Sem token").exists())
+
+        csrf_token = cliente_com_csrf.cookies["csrftoken"].value
+        autorizada = cliente_com_csrf.post(
+            reverse("AMOVE:cadastrar_modalidade"),
+            {
+                "csrfmiddlewaretoken": csrf_token,
+                "nome": "Com token CSRF",
+                "ativa": "on",
+            },
+        )
+
+        self.assertEqual(autorizada.status_code, 302)
+        self.assertTrue(Modalidade.objects.filter(nome="Com token CSRF").exists())
