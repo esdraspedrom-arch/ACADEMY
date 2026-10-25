@@ -1,0 +1,4 @@
+1 - Criar pasta e ambiente virtual(.venv)
+Em um computador central foi criado um repositorio para que se pudesse clonar pelo URL, e fazermos alteraçoes em conjunto por meio de branchs especificas; criamos dentro desse repositorio um projeto(AMOVE) e suas configs.(CIA) ainda no computador central foram feitas as intalaçoes de Django, colocamos os requirements.,depois de startar o projeto seguimos para a proxima etapa "codar".
+Começamos com a utilizaçao de IA - nessa etapa utilizamos a seguinte estrategia passavamos a ideia do que queriamos para o ChatGPT e depois ele gerava um prompt para colocarmos no Copilot, dessa forma conseguiamos otimizar o que era pedido diminuindo o numero de erros e conseguido detalhar bem as alteraçoes.
+2 - Quando digitado "/turmas" na URL do navegador, a pasta de configs do projeto(CIA) é acionada, ela redireciona para o projeto(AMOVE),logo em seguida
